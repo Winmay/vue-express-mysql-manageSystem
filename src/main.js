@@ -11,6 +11,14 @@ Vue.use(ElementUI, { size: 'small' });
 Vue.prototype.$axios = axios;
 
 //使用钩子函数对路由进行权限跳转
+/*
+to: (Route路由对象)  即将要进入的目标 路由对象       to对象下面的属性： path   params  query   hash   fullPath    matched   name    meta（在matched下，但是本例可以直接用）
+
+from: (Route路由对象)  当前导航正要离开的路由
+
+next: (Function函数)   一定要调用该方法来 resolve 这个钩子。  调用方法：next(参数或者空)   ***必须调用
+
+*/
 router.beforeEach((to, from, next) => {
     const role = localStorage.getItem('ms_username');
     if(!role && to.path !== '/login'){
