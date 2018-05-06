@@ -12,11 +12,15 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api':{
-          target:'http://jsonplaceholder.typicode.com',
+          // target:'http://jsonplaceholder.typicode.com',
+          target: 'http://localhost:9999',//设置调用接口域名和端口号别忘了加http
           changeOrigin:true,
+          secure: false,
           pathRewrite:{
-              '/api':''
+              '/api':'/'
           }
+           //这里理解成用‘/api’代替target里面的地址，组件中我们调接口时直接用/api代替
+           // 比如我要调用'http://0.0:300/user/add'，直接写‘/api/user/add’即可 代理后地址栏显示/
       },
       '/ms':{
           target: 'https://www.easy-mock.com/mock/592501a391470c0ac1fab128',
@@ -25,12 +29,19 @@ module.exports = {
     },
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
-    port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
-    autoOpenBrowser: false,
+    port: 8080, //设置访问的端口号// can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    autoOpenBrowser: false,//自动打开浏览器
     errorOverlay: true,
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
+    // Use Eslint Loader?
+    // If true, your code will be linted during bundling and
+    // linting errors and warnings will be shown in the console.
+    /*useEslint: true,*/
+    // If true, eslint errors and warnings will also be shown in the error overlay
+    // in the browser.
+    /*showEslintErrorsInOverlay: false,*/
     
     /**
      * Source Maps

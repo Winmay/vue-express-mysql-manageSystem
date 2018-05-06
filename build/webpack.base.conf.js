@@ -3,17 +3,35 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
+const projectRoot = path.resolve(__dirname, '../')
+
+const env = process.env.NODE_ENV
+    // check env & config/index.js to decide whether to enable CSS source maps for the
+    // various preprocessor loaders added to vue-loader at the end of this file
+const cssSourceMapDev = (env === 'development' && config.dev.cssSourceMap)
+const cssSourceMapProd = (env === 'production' && config.build.productionSourceMap)
+const useCssSourceMap = cssSourceMapDev || cssSourceMapProd
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
-
+const createLintingRule = () => ({
+  test: /\.(js|vue)$/,
+  loader: 'eslint-loader',
+  enforce: 'pre',
+  include: [resolve('src'), resolve('test')],
+  options: {
+    formatter: require('eslint-friendly-formatter'),
+    emitWarning: !config.dev.showEslintErrorsInOverlay
+  }
+})
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './src/main.js'
+    // app: './src/main.js'
+    app: './src/client/index.js'
   },
   output: {
     path: config.build.assetsRoot,
@@ -24,14 +42,20 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.vue', '.json'],
+    fallback: [path.join(__dirname, '../node_modules')],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src'),
-      'static': path.resolve(__dirname, '../static'),
+      // '@': resolve('src'),
+      'src': path.resolve(__dirname, '../src'),
+      // 'static': path.resolve(__dirname, '../static'),
+      'static': path.resolve(__dirname, '../src/client/static'),
+      'components': path.resolve(__dirname, '../src/client/components'),
+      'jquery': path.resolve(__dirname, '../node_modules/jquery/src/jquery')
     }
   },
   module: {
     rules: [
+      ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.vue$/,
         loader: 'vue-loader',
@@ -40,7 +64,7 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: [resolve('src'), resolve('test')]
+        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -66,6 +90,40 @@ module.exports = {
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
       }
+    ],
+    loaders: [
+      {
+        test: /\.vue$/,
+        loader: 'vue'
+      },
+      {
+        test: /\.js$/,
+        loader: 'babel',
+        include: [
+          path.join(projectRoot, 'src')
+        ],
+        exclude: /node_modules/
+      },
+      {
+        test: /\.json$/,
+        loader: 'json'
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        loader: 'url',
+        query: {
+          limit: 10000,
+          name: utils.assetsPath('img/[name].[hash:7].[ext]')
+        }
+      },
+      {
+        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+        loader: 'url',
+        query: {
+          limit: 10000,
+          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+        }
+      }
     ]
   },
   node: {
@@ -79,5 +137,16 @@ module.exports = {
     net: 'empty',
     tls: 'empty',
     child_process: 'empty'
+  },
+  eslint: {
+    formatter: require('eslint-friendly-formatter')
+  },
+  vue: {
+    loaders: utils.cssLoaders({ sourceMap: useCssSourceMap }),
+    postcss: [
+      require('autoprefixer')({
+        browsers: ['last 2 versions']
+      })
+    ]
   }
 }

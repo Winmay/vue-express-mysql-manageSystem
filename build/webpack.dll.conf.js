@@ -6,7 +6,8 @@ module.exports = {
     vendor: ['vue/dist/vue.common.js','vue-router', 'babel-polyfill','axios']
   },
   output: {
-    path: path.join(__dirname, '../static/js'),
+    // path: path.join(__dirname, '../static/js'),
+    path: path.join(__dirname, '../src/client/static'),
     filename: '[name].dll.js',
     library: '[name]_library'
   },

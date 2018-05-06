@@ -4,10 +4,10 @@
         <div class="ms-login">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
                 <el-form-item prop="username">
-                    <el-input v-model="ruleForm.username" placeholder="username"></el-input>
+                    <el-input id="txtUserName" name="txtUserName" v-model="ruleForm.username" placeholder="username"></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
+                    <el-input id="txtUserPwd" name="txtUserPwd" type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
                 </el-form-item>
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
@@ -19,7 +19,10 @@
 </template>
 
 <script>
+    // import AjaxModel from '../../sqlServer/models/ajaxModel';
+    // import {loginIn} from '../../sqlServer/api';
     export default {
+        // mixins: [AjaxModel],
         data: function(){
             return {
                 ruleForm: {
@@ -48,6 +51,19 @@
                     }
                 });
             }
+        },
+        created: function(){
+            /*AjaxModel.ajaxPost('/api/login', res => {
+                console.log(res);
+            })*/
+            /*AjaxModel.ajaxPost(loginIn, {"userName": 'qq',"password":'123'})
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((error) => {
+                console.log(error);
+              // error
+            })*/
         }
     }
 </script>

@@ -11,6 +11,16 @@ var pool = mysql.createPool({
 	database: config.database.database,
 });
 
+
+//监听connection事件
+pool.on('connection', function(connection) {  
+    connection.query('SET SESSION auto_increment_increment=1'); 
+});  
+
+pool.on('error', function(err) {
+  console.log("[mysql error]",err);
+});
+
 /***数据库链接与执行***/
 var query = (sql,val) => {
 	return new Promise((resolve,reject)=>{
@@ -19,7 +29,7 @@ var query = (sql,val) => {
 			if (err){
 				console.log('getConnection')
 				console.log(err)
-				return resolve(err)
+				reject(err)
 			} else{
 				//执行SQL语句
 				connection.query(sql,val,(err,result)=>{
@@ -91,15 +101,15 @@ var fetchAllSqlData = ( table ) => {
 //带条件查找数据
 // @condition string 条件
 // 用where关键字来实现，可以使用<>!=等多条件可以使用or、and等 
-var fetchConditionSqlData = ( table, condition, param ) => {
+var fetchConditionSqlData = ( table, condition, value, param ) => {
 	if( param ){
 		var _sql = `select ${param} from ${table} where ${condition};`
 	}else{
 		var _sql = `select * from ${table} where ${condition};`
 	}
-	return query( _sql )
+	return query( _sql, value )
 }
-/*fetchConditionSqlData( 'datasource' , 'name="周磊"' ).then(res => {
+/*fetchConditionSqlData( 'datasource' , 'name=?',["周磊"] ).then(res => {
 	console.log(JSON.parse(JSON.stringify(res)))
 })*/
 

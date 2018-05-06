@@ -13,6 +13,10 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const env = require('../config/prod.env')
 
+/*const env = process.env.NODE_ENV === 'testing'
+  ? require('../config/test.env')
+  : require('../config/prod.env')*/
+
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({
@@ -61,8 +65,12 @@ const webpackConfig = merge(baseWebpackConfig, {
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
+      /*filename: process.env.NODE_ENV === 'testing'
+        ? 'index.html'
+        : config.build.index,*/
       filename: config.build.index,
       template: 'index.html',
+      // template: 'src/server/views/index.html',
       inject: true,
       minify: {
         removeComments: true,
@@ -111,7 +119,8 @@ const webpackConfig = merge(baseWebpackConfig, {
     // copy custom static assets
     new CopyWebpackPlugin([
       {
-        from: path.resolve(__dirname, '../static'),
+        // from: path.resolve(__dirname, '../static'),
+        from: path.resolve(__dirname, '../src/client/static'),
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
       }
